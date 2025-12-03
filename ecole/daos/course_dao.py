@@ -22,7 +22,7 @@ class CourseDao(Dao[Course]):
         return 0
 
     def read(self, id_course: int) -> Optional[Course]:
-        """Renvoit le cours correspondant à l'entité dont l'id est id_course
+        """Renvoie le cours correspondant à l'entité dont l'id est id_course
            (ou None s'il n'a pu être trouvé)"""
         course: Optional[Course]
         

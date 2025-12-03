@@ -8,15 +8,16 @@ from dataclasses import dataclass
 from abc import ABC, abstractmethod
 from typing import ClassVar, Optional
 import pymysql.cursors
+import cryptography
 
 
 @dataclass
 class Dao[T](ABC):
     connection: ClassVar[pymysql.Connection] = \
         pymysql.connect(host='localhost',
-                        user='ecole',
-                        password='FqDEuKWd9TxLERZg6ooh',
-                        database='ecole',
+                        user='db_school',
+                        password='T34ch3R!',
+                        database='db_school',
                         cursorclass=pymysql.cursors.DictCursor)
 
     @abstractmethod
