@@ -3,7 +3,7 @@
 """
 Classe Dao[Course]
 """
-
+from models.address import Address
 from models.course import Course
 from daos.dao import Dao
 from dataclasses import dataclass, field
@@ -52,6 +52,7 @@ class CourseDao(Dao[Course]):
                 course_one = Course(course['name'], course['start_date'], course['end_date'])
                 course_one.id = course['id_course']
                 course_one.teacher = CourseDao().get_teacher(course_one.id)
+                #course_one.teacher.read(course_one.id)
                 courses.append(course_one)
         else:
             courses = None
@@ -82,7 +83,8 @@ class CourseDao(Dao[Course]):
                 record = cursor.fetchone()
                 if record is not None:
                     teacher = Teacher(record['first_name'], record['last_name'], record['age'], hiring_date)
-
+                    if record['city'] is not None:
+                        teacher.address.street = Address(record['street'], record['city'], record['postal_code'])
         else:
             teacher = None
         return teacher

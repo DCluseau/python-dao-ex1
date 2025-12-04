@@ -23,7 +23,7 @@ class TeacherDao(Dao[Teacher], ABC):
         return 0
 
     def read(self, id_teacher: int) -> Optional[Teacher]:
-        """Renvoie l'étudiant' correspondant à l'entité dont l'id est id_teacher
+        """Renvoie 'l'enseignant' correspondant à l'entité dont l'id est id_teacher
            (ou None s'il n'a pu être trouvé)"""
         teacher: Optional[Teacher]
 
@@ -34,6 +34,18 @@ class TeacherDao(Dao[Teacher], ABC):
         if record is not None:
             teacher = Teacher(record['hiring_date'], record['id_person'])
             teacher.id = record['id_teacher']
+            address_id = record['id_address']
+            with Dao.connection.cursor() as cursor:
+                sql = "SELECT * FROM address WHERE id_address = %s"
+                cursor.execute(sql, (address_id,))
+                record = cursor.fetchone()
+                if record is not None:
+                    teacher.address.id = record['address_id']
+                    teacher.address.city = record['city']
+                    teacher.address.postal_code = record['postal_code']
+                    teacher.address.street = record['street']
+                else:
+                    teacher.address = None
         else:
             teacher = None
 
