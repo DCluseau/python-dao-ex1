@@ -50,8 +50,8 @@ class School:
         - la liste des élèves le suivant"""
         for course in self.courses:
             print(f"cours de {course}")
-            # for student in course.students_taking_it:
-            #     print(f"- {student}")
+            for student in course.students_taking_it:
+                print(f"- {student}")
             print()
 
     @staticmethod
