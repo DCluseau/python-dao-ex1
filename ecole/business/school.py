@@ -28,7 +28,13 @@ class School:
 
     def add_course(self, course: Course) -> None:
         """Ajout du cours course à la liste des cours."""
+
         self.courses.append(course)
+
+    #@staticmethod
+    def add_courses(self):
+        for course in CourseDao().read_all():
+            self.add_course(course)
 
     def add_teacher(self, teacher: Teacher) -> None:
         """Ajout de l'enseignant teacher à la liste des enseignants."""
@@ -44,8 +50,8 @@ class School:
         - la liste des élèves le suivant"""
         for course in self.courses:
             print(f"cours de {course}")
-            for student in course.students_taking_it:
-                print(f"- {student}")
+            # for student in course.students_taking_it:
+            #     print(f"- {student}")
             print()
 
     @staticmethod

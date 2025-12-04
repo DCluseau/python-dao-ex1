@@ -36,6 +36,11 @@ class Course:
     teacher: Optional[Teacher] = field(default=None, init=False)
     students_taking_it: list[Student] = field(default_factory=list, init=False)
 
+    def __init__(self, name: object, start_date: object, end_date: object) -> None:
+        self.name = name
+        self.start_date = start_date
+        self.end_date = end_date
+
     def set_teacher(self, teacher: Teacher) -> None:
         """Indique quel est l'enseignant de ce cours."""
         if teacher != self.teacher:
