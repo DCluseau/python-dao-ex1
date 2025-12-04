@@ -9,6 +9,7 @@ from daos.dao import Dao
 from dataclasses import dataclass, field
 from typing import Optional
 
+from models.student import Student
 from models.teacher import Teacher
 
 
@@ -52,7 +53,7 @@ class CourseDao(Dao[Course]):
                 course_one = Course(course['name'], course['start_date'], course['end_date'])
                 course_one.id = course['id_course']
                 course_one.teacher = CourseDao().get_teacher(course_one.id)
-                #course_one.teacher.read(course_one.id)
+                course_one.students_taking_it = CourseDao().get_students(course_one.id)
                 courses.append(course_one)
         else:
             courses = None
@@ -60,7 +61,7 @@ class CourseDao(Dao[Course]):
 
     @staticmethod
     def get_teacher(id_course):
-        """Renvoie le cours correspondant à l'entité dont l'id est id_course
+        """Renvoie l'enseignant' correspondant à l'entité dont l'id est id_teacher
            (ou None s'il n'a pu être trouvé)"""
 
         with Dao.connection.cursor() as cursor:
@@ -88,6 +89,23 @@ class CourseDao(Dao[Course]):
         else:
             teacher = None
         return teacher
+
+    @staticmethod
+    def get_students(id_course):
+        """Renvoie les élèves correspondant aux entités dont l'id du cours est id_course
+                   (ou None s'il n'ont pu être trouvés)"""
+        with Dao.connection.cursor() as cursor:
+            sql = "SELECT student.student_nbr, person.first_name, person.last_name, person.age, address.street, address.city, address.postal_code FROM person LEFT OUTER JOIN address ON person.id_address = address.id_address LEFT OUTER JOIN student ON student.id_person = person.id_person LEFT OUTER JOIN takes ON takes.student_nbr = student.student_nbr WHERE takes.id_course=%s"
+            cursor.execute(sql, (id_course,))
+            record = cursor.fetchall()
+            if record is not None:
+                students: list[Student] = []
+                for student in record:
+                    student_one = Student(student['first_name'], student['last_name'], student['age'])
+                    if student['city'] is not None:
+                        student_one.address = Address(student['street'], student['city'], student['postal_code'])
+                    students.append(student_one)
+        return students
 
     def update(self, course: Course) -> bool:
         """Met à jour en BD l'entité Course correspondant à course, pour y correspondre
