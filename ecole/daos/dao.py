@@ -31,7 +31,7 @@ class Dao[T](ABC):
 
     @abstractmethod
     def read(self, id_entity: int) -> Optional[T]:
-        """Renvoit l'objet correspondant à l'entité dont l'id est id_entity
+        """Renvoie l'objet correspondant à l'entité dont l'id est id_entity
            (ou None s'il n'a pu être trouvé)"""
         ...
 

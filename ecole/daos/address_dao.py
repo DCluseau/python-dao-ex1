@@ -19,8 +19,18 @@ class AddressDao(Dao[Address], ABC):
         :param address: à créer sous forme d'entité Address en BD
         :return: l'id de l'entité insérée en BD (0 si la création a échoué)
         """
-        ...
-        return 0
+        with Dao.connection.cursor() as cursor:
+            if address.id is not None:
+                sql = "INSERT INTO `address` (`id_address`, `street`, `city`, `postal_code`) VALUES (NULL, '%s', '%s', '%s'); "
+                cursor.execute(sql, address.street, address.city, address.postal_code, )
+                Dao.connection.commit()
+                if cursor.rowcount > 0:
+                    address.id = cursor.lastrowid
+                    return True
+                else:
+                    return False
+            else:
+                return False
 
     def read(self, id_address: int) -> Optional[Address]:
         """Renvoie l'adresse' correspondant à l'entité dont l'id est id_address
@@ -45,8 +55,17 @@ class AddressDao(Dao[Address], ABC):
         :param address: adresse déjà mis à jour en mémoire
         :return: True si la mise à jour a pu être réalisée
         """
-        ...
-        return True
+        with Dao.connection.cursor() as cursor:
+            if address.id is not None:
+                sql = "UPDATE address SET street = %s, city = %s, postal_code = %s WHERE id_address = %s"
+                cursor.execute(sql, address.street, address.city, address.postal_code, address.id,)
+                Dao.connection.commit()
+                if cursor.rowcount > 0:
+                    return True
+                else:
+                    return False
+            else:
+                return self.create(address)
 
     def delete(self, address: Address) -> bool:
         """Supprime en BD l'entité Address correspondant à address

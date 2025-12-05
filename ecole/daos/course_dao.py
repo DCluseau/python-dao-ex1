@@ -28,7 +28,7 @@ class CourseDao(Dao[Course]):
         """Renvoie le cours correspondant à l'entité dont l'id est id_course
            (ou None s'il n'a pu être trouvé)"""
         course: Optional[Course]
-        
+
         with Dao.connection.cursor() as cursor:
             sql = "SELECT * FROM course WHERE id_course=%s"
             cursor.execute(sql, (id_course,))
@@ -63,7 +63,7 @@ class CourseDao(Dao[Course]):
     def get_teacher(id_course):
         """Renvoie l'enseignant' correspondant à l'entité dont l'id est id_teacher
            (ou None s'il n'a pu être trouvé)"""
-
+        # Mettre dans dao_teacher puis renvoyer teacher ?
         with Dao.connection.cursor() as cursor:
             sql = "SELECT id_teacher FROM course WHERE id_course=%s"
             cursor.execute(sql, (id_course,))
@@ -79,13 +79,14 @@ class CourseDao(Dao[Course]):
                 else:
                     hiring_date = ""
                 # Créer un objet Teacher
-                sql = "SELECT teacher.id_teacher, person.first_name, person.last_name, person.age, address.street, address.city, address.postal_code FROM person LEFT OUTER JOIN address ON person.id_address = address.id_address LEFT OUTER JOIN teacher ON teacher.id_person = person.id_person WHERE teacher.id_teacher=%s"
+                sql = "SELECT teacher.id_teacher, person.first_name, person.last_name, person.age, address.street, address.city, address.postal_code, address.id_address FROM person LEFT OUTER JOIN address ON person.id_address = address.id_address LEFT OUTER JOIN teacher ON teacher.id_person = person.id_person WHERE teacher.id_teacher=%s"
                 cursor.execute(sql, (id_teacher,))
                 record = cursor.fetchone()
                 if record is not None:
                     teacher = Teacher(record['first_name'], record['last_name'], record['age'], hiring_date)
-                    if record['city'] is not None:
-                        teacher.address.street = Address(record['street'], record['city'], record['postal_code'])
+                    if record['id_address'] is not None:
+                        teacher.address = Address(record['street'], record['city'], record['postal_code'])
+                        teacher.address.id = record['id_address']
         else:
             teacher = None
         return teacher

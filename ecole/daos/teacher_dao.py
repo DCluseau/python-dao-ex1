@@ -40,7 +40,7 @@ class TeacherDao(Dao[Teacher], ABC):
                 cursor.execute(sql, (address_id,))
                 record = cursor.fetchone()
                 if record is not None:
-                    teacher.address.id = record['address_id']
+                    teacher.address.id = record['id_address']
                     teacher.address.city = record['city']
                     teacher.address.postal_code = record['postal_code']
                     teacher.address.street = record['street']
